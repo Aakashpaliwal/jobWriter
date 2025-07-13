@@ -22,6 +22,8 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import CoverLetterContainer from "@/container/TabContainers/CoverLetterContainer";
+import BioContainer from "@/container/TabContainers/BioContainer";
+import ColdemailContainer from "@/container/TabContainers/coldemailContainer";
 
 const Body = () => {
   return (
@@ -54,29 +56,11 @@ const Body = () => {
           <TabsContent value="coverletter" className={"mt-6"}>
             <CoverLetterContainer />
           </TabsContent>
-          <TabsContent value="password" className={"mt-6"}>
-            <Card>
-              <CardHeader>
-                <CardTitle>Password</CardTitle>
-                <CardDescription>
-                  Change your password here. After saving, you&apos;ll be logged
-                  out.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="grid gap-6">
-                <div className="grid gap-3">
-                  <Label htmlFor="tabs-demo-current">Current password</Label>
-                  <Input id="tabs-demo-current" type="password" />
-                </div>
-                <div className="grid gap-3">
-                  <Label htmlFor="tabs-demo-new">New password</Label>
-                  <Input id="tabs-demo-new" type="password" />
-                </div>
-              </CardContent>
-              <CardFooter>
-                <Button>Save password</Button>
-              </CardFooter>
-            </Card>
+          <TabsContent value="password" className={"mt-6 mb-6"}>
+            <BioContainer />
+          </TabsContent>
+          <TabsContent value="coldoutreach" className={"mt-6 mb-6"}>
+            <ColdemailContainer />
           </TabsContent>
         </Tabs>
       </div>

@@ -47,58 +47,58 @@ const CoverLetterContainer = () => {
 
   const onSubmit = async (data) => {
     console.log("✅ Form submitted:", data);
-    let skillsArr = data.skills
-      .split(",")
-      .map((item) => item.trim())
-      .filter((s) => /^[a-zA-Z0-9\s\-_.]+$/.test(s));
-    let payloadData = {
-      ...data,
-      skills: skillsArr,
-    };
-    console.log(skillsArr);
-    console.log(payloadData);
-    console.log(payloadData.skills.join(","));
-    setLoading(true);
-    const prompt = `
-Write a professional, enthusiastic, and concise cover letter for the following job:
-- Job Title: ${data.jobTitle}
-- Company: ${data.companyName}
-- Candidate Experience: ${data.experience}
-- Key Skills: ${payloadData.skills.join(", ")}
+//     let skillsArr = data.skills
+//       .split(",")
+//       .map((item) => item.trim())
+//       .filter((s) => /^[a-zA-Z0-9\s\-_.]+$/.test(s));
+//     let payloadData = {
+//       ...data,
+//       skills: skillsArr,
+//     };
+//     console.log(skillsArr);
+//     console.log(payloadData);
+//     console.log(payloadData.skills.join(","));
+//     setLoading(true);
+//     const prompt = `
+// Write a professional, enthusiastic, and concise cover letter for the following job:
+// - Job Title: ${data.jobTitle}
+// - Company: ${data.companyName}
+// - Candidate Experience: ${data.experience}
+// - Key Skills: ${payloadData.skills.join(", ")}
 
-Make it sound human, 1-2 paragraphs long.
-`;
+// Make it sound human, 1-2 paragraphs long.
+// `;
 
-    try {
-      const client = new OpenAI({
-        apiKey: import.meta.env.VITE_CHATGPT_API_KEY,
-        dangerouslyAllowBrowser: true,
-      });
-      console.log(client);
-      const completion = await client.chat.completions.create({
-        model: "gpt-3.5-turbo",
-        messages: [
-          {
-            role: "system",
-            content:
-              "You are a helpful career assistant that writes cover letters.",
-          },
-          {
-            role: "user",
-            content: prompt,
-          },
-        ],
-      });
-      console.log(completion);
-      const coverletter = completion.choices[0].message.content;
-      setLoading(false);
-      console.log("📝 Generated Cover Letter:", coverletter);
-      setCoverLetter(completion);
-      // TODO: set it to state and show in right panel
-    } catch (err) {
-      setLoading(false);
-      console.error("❌ OpenAI Error:", err);
-    }
+//     try {
+//       const client = new OpenAI({
+//         apiKey: import.meta.env.VITE_CHATGPT_API_KEY,
+//         dangerouslyAllowBrowser: true,
+//       });
+//       console.log(client);
+//       const completion = await client.chat.completions.create({
+//         model: "gpt-3.5-turbo",
+//         messages: [
+//           {
+//             role: "system",
+//             content:
+//               "You are a helpful career assistant that writes cover letters.",
+//           },
+//           {
+//             role: "user",
+//             content: prompt,
+//           },
+//         ],
+//       });
+//       console.log(completion);
+//       const coverletter = completion.choices[0].message.content;
+//       setLoading(false);
+//       console.log("📝 Generated Cover Letter:", coverletter);
+//       setCoverLetter(completion);
+//       // TODO: set it to state and show in right panel
+//     } catch (err) {
+//       setLoading(false);
+//       console.error("❌ OpenAI Error:", err);
+//     }
   };
 
   console.log(coverLetter);
