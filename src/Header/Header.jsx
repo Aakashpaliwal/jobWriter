@@ -9,7 +9,7 @@ const Header = () => {
           <Zap />
         </div>
         <div>
-          <h4 className="text-blue-500 font-medium">CareerCraft AI</h4>
+          <h4 className="text-blue-500 font-medium">CarrerScribe AI</h4>
           <p className="text-sm text-gray-500">Your AI-powered job application toolkit</p>
         </div>
       </div>
