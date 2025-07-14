@@ -64,60 +64,54 @@ const ColdemailContainer = () => {
   });
 
   const onSubmit = async (data) => {
-    console.log("✅ Form submitted:", data);
-    //     setLoading(true);
+    setLoading(true);
+    const prompt = `
+You are an assistant that writes personalized and concise cold outreach emails.
 
-    //     const industries = data.industry
-    //       .split(",")
-    //       .map((i) => i.trim())
-    //       .filter((i) => /^[a-zA-Z0-9\s\-_.]+$/.test(i));
+Write a compelling cold email with the following information:
+- Recipient Name: ${data.recipientName}
+- Recipient Company: ${data.recipientCompany}
+- Email Type: ${data.emailType}
+- Purpose: ${data.emailPurpose}
+- Sender Background: ${data.background}
+- Specific Request/Goal: ${data.request}
 
-    //     const prompt = `
-    // Write a ${
-    //       data.bioStyle
-    //     } professional bio for a person with the following details:
+Guidelines:
+- Keep it under 150 words
+- Make it friendly but professional in tone
+- Ensure clarity and call-to-action
+- Tailor it to the selected email type (e.g., networking, job opportunity, or collaboration)
 
-    // - Full Name: ${data.fullName}
-    // - Current Role: ${data.currentRole}
-    // - Years of Experience: ${data.yoe}
-    // - Industry: ${industries.join(", ")}
-    // - Key Achievements: ${data.achievement}
+Start with a short greeting, clearly explain why the sender is reaching out, and end with a polite closing and contact prompt.
+`;
 
-    // Make it sound engaging, concise, and tailored for use in a professional portfolio, LinkedIn, or personal website. Use a tone that reflects the "${
-    //       data.bioStyle
-    //     }" style.
-    //   `;
-
-    //     try {
-    //       const client = new OpenAI({
-    //         apiKey: import.meta.env.VITE_CHATGPT_API_KEY,
-    //         dangerouslyAllowBrowser: true,
-    //       });
-    //       console.log(client);
-    //       const completion = await client.chat.completions.create({
-    //         model: "gpt-3.5-turbo",
-    //         messages: [
-    //           {
-    //             role: "system",
-    //             content:
-    //               "You are a helpful career assistant that writes cover letters.",
-    //           },
-    //           {
-    //             role: "user",
-    //             content: prompt,
-    //           },
-    //         ],
-    //       });
-    //       console.log(completion);
-    //       const coverletter = completion.choices[0].message.content;
-    //       setLoading(false);
-    //       console.log("📝 Generated Cover Letter:", coverletter);
-    //       setCoverLetter(completion);
-    //       // TODO: set it to state and show in right panel
-    //     } catch (err) {
-    //       setLoading(false);
-    //       console.error("❌ OpenAI Error:", err);
-    //     }
+    try {
+      const client = new OpenAI({
+        apiKey: import.meta.env.VITE_CHATGPT_API_KEY,
+        dangerouslyAllowBrowser: true,
+      });
+      const completion = await client.chat.completions.create({
+        model: "gpt-3.5-turbo",
+        messages: [
+          {
+            role: "system",
+            content:
+              "You are a helpful assistant that writes concise and personalized cold outreach emails tailored to networking, job opportunities, or collaborations.",
+          },
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
+      });
+      const coverletter = completion.choices[0].message.content;
+      setLoading(false);
+      setCoverLetter(completion);
+      // TODO: set it to state and show in right panel
+    } catch (err) {
+      setLoading(false);
+      console.error("❌ OpenAI Error:", err);
+    }
   };
   return (
     <div className="grid grid-cols-2 gap-6">

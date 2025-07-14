@@ -62,7 +62,6 @@ const BioContainer = () => {
   });
 
   const onSubmit = async (data) => {
-    console.log("✅ Form submitted:", data);
     setLoading(true);
 
     const industries = data.industry
@@ -71,34 +70,32 @@ const BioContainer = () => {
       .filter((i) => /^[a-zA-Z0-9\s\-_.]+$/.test(i));
 
     const prompt = `
-Write a ${
-      data.bioStyle
-    } professional bio for a person with the following details:
+Write a short and impactful professional bio (2–3 sentences max, under 400 characters) that can be used across LinkedIn, GitHub, and freelance profiles.
 
+Use a "${data.bioStyle}" tone.
+
+Details:
 - Full Name: ${data.fullName}
 - Current Role: ${data.currentRole}
 - Years of Experience: ${data.yoe}
-- Industry: ${industries.join(", ")}
+- Industry or Expertise Areas: ${industries.join(", ")}
 - Key Achievements: ${data.achievement}
 
-Make it sound engaging, concise, and tailored for use in a professional portfolio, LinkedIn, or personal website. Use a tone that reflects the "${
-      data.bioStyle
-    }" style.
-  `;
+Avoid long paragraphs. Keep it concise, skimmable, and aligned with modern professional networking platforms.
+`;
 
     try {
       const client = new OpenAI({
         apiKey: import.meta.env.VITE_CHATGPT_API_KEY,
         dangerouslyAllowBrowser: true,
       });
-      console.log(client);
       const completion = await client.chat.completions.create({
         model: "gpt-3.5-turbo",
         messages: [
           {
             role: "system",
             content:
-              "You are a helpful career assistant that writes cover letters.",
+              "You are a helpful assistant that writes short, engaging, and impactful professional bios for LinkedIn, GitHub, and freelance profiles.",
           },
           {
             role: "user",
@@ -106,10 +103,8 @@ Make it sound engaging, concise, and tailored for use in a professional portfoli
           },
         ],
       });
-      console.log(completion);
       const coverletter = completion.choices[0].message.content;
       setLoading(false);
-      console.log("📝 Generated Cover Letter:", coverletter);
       setCoverLetter(completion);
       // TODO: set it to state and show in right panel
     } catch (err) {
@@ -261,7 +256,9 @@ Make it sound engaging, concise, and tailored for use in a professional portfoli
           <CardFooter>
             <Button
               type="submit"
-              className={"w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"}
+              className={
+                "w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+              }
               variant={"primary"}
               disabled={loading}
             >
