@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import {
   AppWindowIcon,
   CodeIcon,
+  Copy,
+  Download,
   Loader2Icon,
   Mail,
   Sparkle,
@@ -25,6 +27,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import OpenAI from "openai";
+import { toast } from "sonner";
+import jsPDF from "jspdf";
 
 const schema = z.object({
   jobTitle: z.string().min(1, "Job Title is required"),
@@ -40,6 +44,7 @@ const CoverLetterContainer = () => {
     register,
     handleSubmit,
     formState: { errors, isValid },
+    getValues,
   } = useForm({
     resolver: zodResolver(schema),
     mode: "onChange",
@@ -86,12 +91,53 @@ Make it sound human, 1-2 paragraphs long.
       });
       const coverletter = completion.choices[0].message.content;
       setLoading(false);
-      setCoverLetter(completion);
+      setCoverLetter(coverletter);
       // TODO: set it to state and show in right panel
     } catch (err) {
       setLoading(false);
       console.error("❌ OpenAI Error:", err);
     }
+  };
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(coverLetter);
+    toast("Copied!", {
+      description: "Cover letter copied to clipboard",
+    });
+  };
+
+  const downloadAsPDF = () => {
+    const formData = getValues();
+    const doc = new jsPDF();
+    const margin = 20;
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const maxWidth = pageWidth - 2 * margin;
+
+    // Set font
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(12);
+
+    // Add title
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    doc.text("Cover Letter", margin, margin + 10);
+
+    // Add content
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+
+    // Split text into lines that fit the page width
+    const lines = doc.splitTextToSize(coverLetter, maxWidth);
+    doc.text(lines, margin, margin + 30);
+
+    // Save the PDF
+    const fileName = `Cover_Letter_${formData.jobTitle || "Job"}_${
+      formData.companyName || "Company"
+    }.pdf`.replace(/[^a-zA-Z0-9_]/g, "_");
+    doc.save(fileName);
+    toast("Downloaded!", {
+      description: "Cover letter saved as PDF",
+    });
   };
 
   return (
@@ -211,10 +257,29 @@ Make it sound human, 1-2 paragraphs long.
         </CardHeader>
         <CardContent className="">
           {coverLetter ? (
-            // <div className="whitespace-pre-wrap text-sm text-gray-700 break-words"><pre>{coverLetter?.choices?.[0]?.message?.content}</pre></div>
-            <p className="whitespace-pre-wrap text-sm leading-relaxed">
-              {coverLetter?.choices?.[0]?.message?.content}
-            </p>
+            <>
+              <p className="whitespace-pre-wrap text-sm leading-relaxed">
+                {coverLetter}
+              </p>
+              <div className="flex space-x-2 mt-4">
+                <Button
+                  onClick={copyToClipboard}
+                  variant="outline"
+                  className="flex items-center space-x-2 cursor-pointer"
+                >
+                  <Copy className="h-4 w-4" />
+                  <span>Copy</span>
+                </Button>
+                <Button
+                  onClick={downloadAsPDF}
+                  variant="outline"
+                  className="flex items-center space-x-2 cursor-pointer"
+                >
+                  <Download className="h-4 w-4" />
+                  <span>Download PDF</span>
+                </Button>
+              </div>
+            </>
           ) : (
             <>
               <Sparkles className="text-gray-300 w-25 h-25 m-auto mt-12" />
@@ -224,25 +289,7 @@ Make it sound human, 1-2 paragraphs long.
               </p>
             </>
           )}
-          {/* {
-            coverLetter ? 
-            (
-            <p>
-              {coverLetter?.choices?[0]?.message?.content}
-            </p>
-            )
-            :
-            <>
-             <Sparkles className="text-gray-300 w-25 h-25 m-auto mt-12" />
-          <p className="text-center mt-3 text-gray-400">
-            Fill in the form and click "Generate Cover Letter" to get started
-          </p>
-            </>
-          } */}
         </CardContent>
-        {/* <CardFooter>
-          <Button>Save changes</Button>
-        </CardFooter> */}
       </Card>
     </div>
   );

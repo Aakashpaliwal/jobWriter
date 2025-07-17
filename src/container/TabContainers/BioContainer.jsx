@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import {
   AppWindowIcon,
   CodeIcon,
+  Copy,
   Loader2Icon,
   Mail,
   Sparkle,
@@ -36,6 +37,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import clsx from "clsx";
+import { toast } from "sonner";
 
 const schema = z.object({
   fullName: z.string().min(1, "Full Name is required"),
@@ -70,18 +72,15 @@ const BioContainer = () => {
       .filter((i) => /^[a-zA-Z0-9\s\-_.]+$/.test(i));
 
     const prompt = `
-Write a short and impactful professional bio (2–3 sentences max, under 400 characters) that can be used across LinkedIn, GitHub, and freelance profiles.
+Write a short, impactful professional bio for the user below, suitable for sharing on all social media platforms (LinkedIn, Twitter, Instagram, GitHub, etc). The bio must use the tone specified by the user and MUST NOT exceed 200 characters, as social media bios have strict character limits. Avoid long paragraphs and keep it concise, skimmable, and modern.
 
-Use a "${data.bioStyle}" tone.
-
-Details:
+User Details:
 - Full Name: ${data.fullName}
 - Current Role: ${data.currentRole}
 - Years of Experience: ${data.yoe}
 - Industry or Expertise Areas: ${industries.join(", ")}
 - Key Achievements: ${data.achievement}
-
-Avoid long paragraphs. Keep it concise, skimmable, and aligned with modern professional networking platforms.
+- Preferred Tone: ${data.bioStyle}
 `;
 
     try {
@@ -111,6 +110,13 @@ Avoid long paragraphs. Keep it concise, skimmable, and aligned with modern profe
       setLoading(false);
       console.error("❌ OpenAI Error:", err);
     }
+  };
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(coverLetter?.choices?.[0]?.message?.content);
+    toast("Copied!", {
+      description: "Bio copied to clipboard",
+    });
   };
 
   return (
@@ -284,9 +290,21 @@ Avoid long paragraphs. Keep it concise, skimmable, and aligned with modern profe
         </CardHeader>
         <CardContent className="">
           {coverLetter ? (
-            <p className="whitespace-pre-wrap text-sm leading-relaxed">
-              {coverLetter?.choices?.[0]?.message?.content}
-            </p>
+            <>
+              <p className="whitespace-pre-wrap text-sm leading-relaxed">
+                {coverLetter?.choices?.[0]?.message?.content}
+              </p>
+              <div className="flex space-x-2 mt-6 justify-center">
+                <Button
+                  onClick={copyToClipboard}
+                  variant="outline"
+                  className="flex items-center space-x-2 cursor-pointer"
+                >
+                  <Copy className="h-4 w-4" />
+                  <span>Copy</span>
+                </Button>
+              </div>
+            </>
           ) : (
             <>
               <User className="text-gray-300 w-25 h-25 m-auto mt-12" />

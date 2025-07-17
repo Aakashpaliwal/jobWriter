@@ -3,6 +3,7 @@ import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
 import { Button } from "@/components/ui/button";
+import { Toaster } from "@/components/ui/sonner";
 import Header from "@/Header/Header";
 import Body from "@/container/Body";
 import Footer from "@/Footer/Footer";
@@ -12,6 +13,7 @@ function App() {
 
   return (
     <>
+      <Toaster richColors position="top-center" />
       <Header />
       <Body />
       <Footer />
@@ -20,4 +22,3 @@ function App() {
 }
 
 export default App;
- 
