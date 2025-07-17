@@ -37,7 +37,7 @@ const Body = () => {
         <br />
         outreach emails that get you noticed by employers and recruiters.
       </p>
-      <div className="flex w-full flex-col gap-6 mt-14">
+      <div className="flex w-full flex-col gap-6 mt-14 px-3">
         <Tabs defaultValue="coverletter">
           <TabsList className={"w-full bg-[#F0F4F9]"}>
             <TabsTrigger value="coverletter" className={"hover:cursor-pointer"}>
@@ -53,7 +53,7 @@ const Body = () => {
               <Mail /> Cold Outreach
             </TabsTrigger>
           </TabsList>
-          <TabsContent value="coverletter" className={"mt-6"}>
+          <TabsContent value="coverletter" className={"mt-6 mb-6"}>
             <CoverLetterContainer />
           </TabsContent>
           <TabsContent value="password" className={"mt-6 mb-6"}>

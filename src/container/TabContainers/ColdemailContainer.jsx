@@ -114,7 +114,7 @@ Start with a short greeting, clearly explain why the sender is reaching out, and
     }
   };
   return (
-    <div className="grid grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <form onSubmit={handleSubmit(onSubmit)}>
         <Card className={"border-0"}>
           <CardHeader>

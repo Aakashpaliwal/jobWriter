@@ -95,7 +95,7 @@ Make it sound human, 1-2 paragraphs long.
   };
 
   return (
-    <div className="grid grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <form onSubmit={handleSubmit(onSubmit)}>
         <Card className={"border-0"}>
           <CardHeader>
