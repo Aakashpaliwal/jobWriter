@@ -36,6 +36,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import clsx from "clsx";
+import { analytics } from "@/firebase";
+import { logEvent } from "firebase/analytics";
 
 const coldEmailSchema = z.object({
   recipientName: z.string().min(2, "Recipient name is required"),
@@ -107,6 +109,7 @@ Start with a short greeting, clearly explain why the sender is reaching out, and
       const coverletter = completion.choices[0].message.content;
       setLoading(false);
       setCoverLetter(completion);
+      logEvent(analytics, "email_generated");
       // TODO: set it to state and show in right panel
     } catch (err) {
       setLoading(false);

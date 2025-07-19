@@ -38,6 +38,8 @@ import {
 } from "@/components/ui/select";
 import clsx from "clsx";
 import { toast } from "sonner";
+import { analytics } from "@/firebase";
+import { logEvent } from "firebase/analytics";
 
 const schema = z.object({
   fullName: z.string().min(1, "Full Name is required"),
@@ -105,6 +107,7 @@ User Details:
       const coverletter = completion.choices[0].message.content;
       setLoading(false);
       setCoverLetter(completion);
+      logEvent(analytics, "bio_generated");
       // TODO: set it to state and show in right panel
     } catch (err) {
       setLoading(false);

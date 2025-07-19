@@ -29,6 +29,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import OpenAI from "openai";
 import { toast } from "sonner";
 import jsPDF from "jspdf";
+import { analytics } from "@/firebase";
+import { logEvent } from "firebase/analytics";
 
 const schema = z.object({
   jobTitle: z.string().min(1, "Job Title is required"),
@@ -92,6 +94,7 @@ Make it sound human, 1-2 paragraphs long.
       const coverletter = completion.choices[0].message.content;
       setLoading(false);
       setCoverLetter(coverletter);
+      logEvent(analytics, "coverletter_generated");
       // TODO: set it to state and show in right panel
     } catch (err) {
       setLoading(false);
