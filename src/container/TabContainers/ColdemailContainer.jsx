@@ -68,7 +68,7 @@ const ColdemailContainer = () => {
   const onSubmit = async (data) => {
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:5000/api/generate-cold-email', {
+      const response = await axios.post('https://careeerscribebe.onrender.com/api/generate-cold-email', {
         recipient: data.recipientName,
         purpose: data.emailPurpose,
         sender: data.background,

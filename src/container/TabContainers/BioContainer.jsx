@@ -72,7 +72,7 @@ const BioContainer = () => {
       .map((i) => i.trim())
       .filter((i) => /^[a-zA-Z0-9\s\-_.]+$/.test(i));
     try {
-      const response = await axios.post('http://localhost:5000/api/generate-bio', {
+      const response = await axios.post('https://careeerscribebe.onrender.com/api/generate-bio', {
         name: data.fullName,
         currentRole: data.currentRole,
         achievement: data.achievement,
