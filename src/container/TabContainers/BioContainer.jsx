@@ -26,7 +26,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import OpenAI from "openai";
+import axios from 'axios';
 import {
   Select,
   SelectContent,
@@ -67,56 +67,30 @@ const BioContainer = () => {
 
   const onSubmit = async (data) => {
     setLoading(true);
-
     const industries = data.industry
       .split(",")
       .map((i) => i.trim())
       .filter((i) => /^[a-zA-Z0-9\s\-_.]+$/.test(i));
-
-    const prompt = `
-Write a short, impactful professional bio for the user below, suitable for sharing on all social media platforms (LinkedIn, Twitter, Instagram, GitHub, etc). The bio must use the tone specified by the user and MUST NOT exceed 200 characters, as social media bios have strict character limits. Avoid long paragraphs and keep it concise, skimmable, and modern.
-
-User Details:
-- Full Name: ${data.fullName}
-- Current Role: ${data.currentRole}
-- Years of Experience: ${data.yoe}
-- Industry or Expertise Areas: ${industries.join(", ")}
-- Key Achievements: ${data.achievement}
-- Preferred Tone: ${data.bioStyle}
-`;
-
     try {
-      const client = new OpenAI({
-        apiKey: import.meta.env.VITE_CHATGPT_API_KEY,
-        dangerouslyAllowBrowser: true,
+      const response = await axios.post('http://localhost:5000/api/generate-bio', {
+        name: data.fullName,
+        currentRole: data.currentRole,
+        achievement: data.achievement,
+        experience: data.yoe,
+        skills: industries,
+        bioStyle: data.bioStyle
       });
-      const completion = await client.chat.completions.create({
-        model: "gpt-3.5-turbo",
-        messages: [
-          {
-            role: "system",
-            content:
-              "You are a helpful assistant that writes short, engaging, and impactful professional bios for LinkedIn, GitHub, and freelance profiles.",
-          },
-          {
-            role: "user",
-            content: prompt,
-          },
-        ],
-      });
-      const coverletter = completion.choices[0].message.content;
-      setLoading(false);
-      setCoverLetter(completion);
+      setCoverLetter(response.data.bio);
       logEvent(analytics, "bio_generated");
-      // TODO: set it to state and show in right panel
+      setLoading(false);
     } catch (err) {
       setLoading(false);
-      console.error("❌ OpenAI Error:", err);
+      console.error('API Error:', err);
     }
   };
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(coverLetter?.choices?.[0]?.message?.content);
+    navigator.clipboard.writeText(coverLetter);
     toast("Copied!", {
       description: "Bio copied to clipboard",
     });
@@ -295,7 +269,7 @@ User Details:
           {coverLetter ? (
             <>
               <p className="whitespace-pre-wrap text-sm leading-relaxed">
-                {coverLetter?.choices?.[0]?.message?.content}
+                {coverLetter}
               </p>
               <div className="flex space-x-2 mt-6 justify-center">
                 <Button

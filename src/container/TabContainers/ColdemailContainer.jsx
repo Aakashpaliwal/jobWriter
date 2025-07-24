@@ -25,7 +25,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import OpenAI from "openai";
+import axios from 'axios';
 import {
   Select,
   SelectContent,
@@ -67,53 +67,19 @@ const ColdemailContainer = () => {
 
   const onSubmit = async (data) => {
     setLoading(true);
-    const prompt = `
-You are an assistant that writes personalized and concise cold outreach emails.
-
-Write a compelling cold email with the following information:
-- Recipient Name: ${data.recipientName}
-- Recipient Company: ${data.recipientCompany}
-- Email Type: ${data.emailType}
-- Purpose: ${data.emailPurpose}
-- Sender Background: ${data.background}
-- Specific Request/Goal: ${data.request}
-
-Guidelines:
-- Keep it under 150 words
-- Make it friendly but professional in tone
-- Ensure clarity and call-to-action
-- Tailor it to the selected email type (e.g., networking, job opportunity, or collaboration)
-
-Start with a short greeting, clearly explain why the sender is reaching out, and end with a polite closing and contact prompt.
-`;
-
     try {
-      const client = new OpenAI({
-        apiKey: import.meta.env.VITE_CHATGPT_API_KEY,
-        dangerouslyAllowBrowser: true,
+      const response = await axios.post('http://localhost:5000/api/generate-cold-email', {
+        recipient: data.recipientName,
+        purpose: data.emailPurpose,
+        sender: data.background,
+        context: data.request,
       });
-      const completion = await client.chat.completions.create({
-        model: "gpt-3.5-turbo",
-        messages: [
-          {
-            role: "system",
-            content:
-              "You are a helpful assistant that writes concise and personalized cold outreach emails tailored to networking, job opportunities, or collaborations.",
-          },
-          {
-            role: "user",
-            content: prompt,
-          },
-        ],
-      });
-      const coverletter = completion.choices[0].message.content;
-      setLoading(false);
-      setCoverLetter(completion);
+      setCoverLetter(response.data.coldEmail);
       logEvent(analytics, "email_generated");
-      // TODO: set it to state and show in right panel
+      setLoading(false);
     } catch (err) {
       setLoading(false);
-      console.error("❌ OpenAI Error:", err);
+      console.error('API Error:', err);
     }
   };
   return (
@@ -298,7 +264,7 @@ Start with a short greeting, clearly explain why the sender is reaching out, and
         <CardContent className="">
           {coverLetter ? (
             <p className="whitespace-pre-wrap text-sm leading-relaxed">
-              {coverLetter?.choices?.[0]?.message?.content}
+              {coverLetter}
             </p>
           ) : (
             <>

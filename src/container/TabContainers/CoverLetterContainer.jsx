@@ -31,6 +31,7 @@ import { toast } from "sonner";
 import jsPDF from "jspdf";
 import { analytics } from "@/firebase";
 import { logEvent } from "firebase/analytics";
+import axios from 'axios';
 
 const schema = z.object({
   jobTitle: z.string().min(1, "Job Title is required"),
@@ -62,43 +63,14 @@ const CoverLetterContainer = () => {
       skills: skillsArr,
     };
     setLoading(true);
-    const prompt = `
-Write a professional, enthusiastic, and concise cover letter for the following job:
-- Job Title: ${data.jobTitle}
-- Company: ${data.companyName}
-- Candidate Experience: ${data.experience}
-- Key Skills: ${payloadData.skills.join(", ")}
-
-Make it sound human, 1-2 paragraphs long.
-`;
-
     try {
-      const client = new OpenAI({
-        apiKey: import.meta.env.VITE_CHATGPT_API_KEY,
-        dangerouslyAllowBrowser: true,
-      });
-      const completion = await client.chat.completions.create({
-        model: "gpt-3.5-turbo",
-        messages: [
-          {
-            role: "system",
-            content:
-              "You are a helpful career assistant that writes cover letters.",
-          },
-          {
-            role: "user",
-            content: prompt,
-          },
-        ],
-      });
-      const coverletter = completion.choices[0].message.content;
-      setLoading(false);
-      setCoverLetter(coverletter);
+      const response = await axios.post('http://localhost:5000/api/generate-cover-letter', payloadData);
+      setCoverLetter(response.data.coverLetter);
       logEvent(analytics, "coverletter_generated");
-      // TODO: set it to state and show in right panel
+      setLoading(false);
     } catch (err) {
       setLoading(false);
-      console.error("❌ OpenAI Error:", err);
+      toast.error(err.response?.data?.error || 'Failed to generate cover letter.');
     }
   };
 
